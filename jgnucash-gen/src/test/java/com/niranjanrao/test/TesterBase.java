@@ -11,6 +11,7 @@ import javax.tools.JavaFileObject;
 import javax.tools.ToolProvider;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
@@ -18,9 +19,16 @@ import org.junit.runner.Description;
 import com.niranjanrao.gnucash.CashGenerator;
 
 public class TesterBase {
-	MemoryCodeWriter memoryWriter;
+	protected MemoryCodeWriter memoryWriter;
 	ClassLoader memoryClassLoader;
-	CashGenerator gen;
+	protected CashGenerator gen;
+
+	@Before
+	public void setup() throws Exception {
+		this.gen = new CashGenerator();
+		memoryWriter = new MemoryCodeWriter();
+
+	}
 
 	@Rule
 	public TestWatcher testWatcher = new TestWatcher() {
