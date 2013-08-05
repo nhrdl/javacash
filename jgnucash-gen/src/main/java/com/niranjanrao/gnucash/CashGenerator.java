@@ -50,11 +50,19 @@ public class CashGenerator {
 		this.model = new JCodeModel();
 		defineElementMap = new HashMap<>();
 
-		countDataMap = toMap("book", "Book", "commodity", "commodity");
+		countDataMap = toMap("book", "Book", "commodity", "Commodity", "account", "Account", "transaction", "Transaction", "schedxaction",
+				"ScheduledTransaction", "budget", "Budget", "gnc:GncBillTerm", "BillTerm", "gnc:GncCustomer", "Customer", "gnc:GncEmployee", "Employee",
+				"gnc:GncEntry", "Entry", "gnc:GncInvoice", "Invoice", "gnc:GncJob", "Job", "gnc:GncOrder", "Order", "gnc:GncTaxTable", "TaxTable",
+				"gnc:GncVendor", "Vendor");
+	}
+
+	public String getCountDataMappingName(final String type) {
+		return countDataMap.get(type);
 	}
 
 	public void generate(final InputStream in, final CodeWriter writer) throws Exception {
-		processRNGFile(in);
+		loadDocument(in);
+		processRNGFile();
 		generate(writer);
 	}
 
@@ -108,32 +116,42 @@ public class CashGenerator {
 		return (Node) xpath.evaluate(query, context, XPathConstants.NODE);
 	}
 
-	public void processRNGFile(final InputStream in) throws Exception {
-		try {
-			loadDocument(in);
-			final NodeList result = evaluateXPathList("//rng:grammar/rng:define");
+	public void processRNGFile() throws Exception {
+		final NodeList result = evaluateXPathList("//rng:grammar/rng:define");
 
-			log.info("Got elements {}" + result.getLength());
-			Node node;
-			String name;
-			for (int i = 0, iMax = result.getLength(); i < iMax; i++) {
-				node = result.item(i);
-				name = evaluateXPath("./@name", node).getTextContent();
-				defineElementMap.put(name, node);
-			}
+		log.info("Got elements " + result.getLength());
+		Node node;
+		String name;
+		for (int i = 0, iMax = result.getLength(); i < iMax; i++) {
+			node = result.item(i);
+			name = evaluateXPath("./@name", node).getTextContent();
+			defineElementMap.put(name, node);
+		}
+
+	}
+
+	public void loadDocument(final InputStream in) throws ParserConfigurationException, SAXException, IOException {
+		try {
+			final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+			docFactory.setNamespaceAware(true); // never forget this!
+			final DocumentBuilder builder = docFactory.newDocumentBuilder();
+			this.document = builder.parse(in);
 		} finally {
 			in.close();
 		}
 	}
 
-	public void loadDocument(final InputStream in) throws ParserConfigurationException, SAXException, IOException {
-		final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-		docFactory.setNamespaceAware(true); // never forget this!
-		final DocumentBuilder builder = docFactory.newDocumentBuilder();
-		this.document = builder.parse(in);
-	}
-
 	public boolean hasDefinedElement(final String string) {
 		return defineElementMap.containsKey(string);
 	}
+
+	public void forEachNodeDo(final NodeList list, final INodeWorker iNodeWorker, final Object... data) throws Exception {
+		Node node;
+		for (int i = 0, iMax = list.getLength(); i < iMax; i++) {
+			node = list.item(i);
+			iNodeWorker.doWork(i, node, data);
+		}
+
+	}
+
 }

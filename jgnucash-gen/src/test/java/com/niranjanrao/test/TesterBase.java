@@ -26,6 +26,7 @@ public class TesterBase {
 	@Before
 	public void setup() throws Exception {
 		this.gen = new CashGenerator();
+		gen.loadDocument(getRNGFileResource());
 		memoryWriter = new MemoryCodeWriter();
 
 	}
