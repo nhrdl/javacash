@@ -5,9 +5,11 @@ import java.io.InputStream;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 public class Main {
@@ -32,15 +34,18 @@ public class Main {
 	}
 
 	public void process(final InputStream in, final String string) throws Exception {
-		final InputSource is = new InputSource(in);
-		final NamespaceContext context = new NamespaceContextMap("rng", "http://relaxng.org/ns/structure/1.0");
-		final XPathFactory factory = XPathFactory.newInstance();
-		final XPath xpath = factory.newXPath();
-		xpath.setNamespaceContext(context);
-		final XPathExpression expression = xpath.compile("//rng:grammar/rng:start/rng:ref/@name");
-		final String result = expression.evaluate(is);
-		System.out.println("Got element " + result);
-		in.close();
+		try {
+			final InputSource is = new InputSource(in);
+			final NamespaceContext context = new NamespaceContextMap("rng", "http://relaxng.org/ns/structure/1.0");
+			final XPathFactory factory = XPathFactory.newInstance();
+			final XPath xpath = factory.newXPath();
+			xpath.setNamespaceContext(context);
+			final XPathExpression expression = xpath.compile("//rng:grammar/rng:define");
+			final NodeList result = (NodeList) expression.evaluate(is, XPathConstants.NODESET);
+			System.out.println("Got elements " + result.getLength());
+		} finally {
+			in.close();
+		}
 	}
 
 }
