@@ -1,4 +1,4 @@
-package com.niranjanrao.gnucash;
+package org.gnu.gnucash;
 
 import java.util.Collections;
 import java.util.HashMap;

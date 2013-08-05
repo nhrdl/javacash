@@ -9,6 +9,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
+import org.gnu.gnucash.NamespaceContextMap;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 

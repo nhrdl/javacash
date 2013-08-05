@@ -5,35 +5,25 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
+import org.gnu.gnucash.CashBase;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JPackage;
 
-public class CashGenerator {
+public class CashGenerator extends CashBase {
 
 	static Logger log = Logger.getLogger(CashGenerator.class);
 
 	private final JCodeModel model;
 	HashMap<String, Node> defineElementMap;
 	Map<String, String> countDataMap;
-
-	private Document document;
 
 	private static Map<String, String> toMap(final String... mappingPairs) throws Exception {
 		if (0 != mappingPairs.length % 2) {
@@ -93,29 +83,6 @@ public class CashGenerator {
 
 	}
 
-	final XPathFactory xpathFactory = XPathFactory.newInstance();
-	final NamespaceContext nameSpaceContext = new NamespaceContextMap("rng", "http://relaxng.org/ns/structure/1.0");
-
-	public NodeList evaluateXPathList(final String query) throws Exception {
-		return evaluateXPathList(query, document);
-	}
-
-	public NodeList evaluateXPathList(final String query, final Node context) throws Exception {
-		final XPath xpath = xpathFactory.newXPath();
-		xpath.setNamespaceContext(nameSpaceContext);
-		return (NodeList) xpath.evaluate(query, context, XPathConstants.NODESET);
-	}
-
-	public Node evaluateXPath(final String query) throws Exception {
-		return evaluateXPath(query, document);
-	}
-
-	public Node evaluateXPath(final String query, final Node context) throws Exception {
-		final XPath xpath = xpathFactory.newXPath();
-		xpath.setNamespaceContext(nameSpaceContext);
-		return (Node) xpath.evaluate(query, context, XPathConstants.NODE);
-	}
-
 	public void processRNGFile() throws Exception {
 		final NodeList result = evaluateXPathList("//rng:grammar/rng:define");
 
@@ -128,17 +95,25 @@ public class CashGenerator {
 			defineElementMap.put(name, node);
 		}
 
+		for (final Entry<String, Node> entry : defineElementMap.entrySet()) {
+			final String classPath = getClassPath(entry);
+			final JDefinedClass cls = model._getClass(classPath);
+			if (null == cls) {
+				log.info("Going to create class " + classPath);
+			}
+		}
 	}
 
-	public void loadDocument(final InputStream in) throws ParserConfigurationException, SAXException, IOException {
-		try {
-			final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			docFactory.setNamespaceAware(true); // never forget this!
-			final DocumentBuilder builder = docFactory.newDocumentBuilder();
-			this.document = builder.parse(in);
-		} finally {
-			in.close();
+	private String getClassPath(final Entry<String, Node> entry) throws Exception {
+		final Node elm = evaluateXPath("./rng:element/@name", entry.getValue());
+		String pkg = "";
+		if (elm == null) {
+			log.debug("Could not find element element for define " + entry.getKey());
+
+		} else {
+			pkg = elm.getTextContent();
 		}
+		return getFullyQualifiedName(entry.getKey(), pkg);
 	}
 
 	public boolean hasDefinedElement(final String string) {
@@ -152,6 +127,20 @@ public class CashGenerator {
 			iNodeWorker.doWork(i, node, data);
 		}
 
+	}
+
+	static final String PACAKGE_PATH = "org.gnu.gnucash.";
+
+	public String getFullyQualifiedName(final String className, final String namespacePath) {
+		final StringBuffer buff = new StringBuffer(PACAKGE_PATH);
+		String temp = namespacePath.replaceAll("-", "_");
+		temp = temp.replace(":", ".");
+		buff.append(temp);
+		if (buff.toString().endsWith(".") == false) {
+			buff.append(".");
+		}
+		buff.append(className);
+		return buff.toString();
 	}
 
 }

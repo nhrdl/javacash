@@ -46,4 +46,10 @@ public class TestRNGReading extends TesterBase {
 		gen.generate(is, this.memoryWriter);
 
 	}
+
+	@Test
+	public void getFullyQualifiedNames() {
+		final String result = gen.getFullyQualifiedName("Book", "gnc:book");
+		Assert.assertEquals(result, "org.gnu.gnucash.gnc.book.Book");
+	}
 }
