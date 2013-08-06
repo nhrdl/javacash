@@ -1,4 +1,4 @@
-package com.niranjanrao.gnucash;
+package org.gnu.gnucash;
 
 import org.w3c.dom.Node;
 

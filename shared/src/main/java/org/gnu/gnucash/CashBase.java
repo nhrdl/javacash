@@ -58,4 +58,12 @@ public class CashBase {
 		}
 	}
 
+	public void forEachNodeDo(final NodeList list, final INodeWorker iNodeWorker, final Object... data) throws Exception {
+		Node node;
+		for (int i = 0, iMax = list.getLength(); i < iMax; i++) {
+			node = list.item(i);
+			iNodeWorker.doWork(i, node, data);
+		}
+
+	}
 }

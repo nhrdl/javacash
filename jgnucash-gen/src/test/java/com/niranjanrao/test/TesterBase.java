@@ -10,6 +10,7 @@ import javax.tools.JavaCompiler.CompilationTask;
 import javax.tools.JavaFileObject;
 import javax.tools.ToolProvider;
 
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -40,32 +41,38 @@ public class TesterBase {
 		};
 	};
 
-	ClassLoader compileInMemory(final MemoryCodeWriter writer) {
+	static private Logger log = Logger.getLogger(TesterBase.class);
+
+	public ClassLoader compileInMemory(final MemoryCodeWriter writer) throws Exception {
 		final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
 		final MemoryFileManager fileMan = new MemoryFileManager(compiler);
 		final CompilationTask task = compiler.getTask(null, fileMan, diagnostics, null, null, writer.getCompilationUnits());
 		final boolean success = task.call();
 		for (final Diagnostic<?> diagnostic : diagnostics.getDiagnostics()) {
-			System.out.println(diagnostic.getLineNumber());
-			System.out.println(diagnostic.getMessage(Locale.US));
+
+			final JavaSourceFromString js = (JavaSourceFromString) diagnostic.getSource();
+			log.error(String.format("%s:%d:%s", js.toUri(), diagnostic.getLineNumber(), diagnostic.getMessage(Locale.US)));
+			// System.out.println(js.toUri());
+			// System.out.println(diagnostic.getLineNumber());
+			// System.out.println(diagnostic.getMessage(Locale.US));
 			// System.out.println(diagnostic.getCode());
 			// System.out.println(diagnostic.getKind());
 			// System.out.println(diagnostic.getPosition());
 			// System.out.println(diagnostic.getStartPosition());
 			// System.out.println(diagnostic.getEndPosition());
-			// System.out.println(diagnostic.getSource());
+
 			// System.out.println(diagnostic.getMessage(null));
 			//
 
 		}
-		// writer.dump();
+		writer.dump();
 
 		Assert.assertTrue("Compilation failed", success);
 		return new MemoryClassLoader(fileMan.getMap());
 	}
 
-	Class<?> compileAndLoad(final String fullClassName) throws Exception {
+	public Class<?> compileAndLoad(final String fullClassName) throws Exception {
 
 		gen.writeTo(memoryWriter);
 		memoryClassLoader = compileInMemory(memoryWriter);

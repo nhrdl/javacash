@@ -3,6 +3,7 @@ package com.niranjanrao.gnucash;
 import java.io.InputStream;
 
 import org.apache.log4j.Logger;
+import org.gnu.gnucash.INodeWorker;
 import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Node;
@@ -32,7 +33,6 @@ public class TestRNGReading extends TesterBase {
 			@Override
 			public void doWork(final int index, final Node node, final Object... data) throws Exception {
 				final String mappedType = gen.getCountDataMappingName(node.getTextContent());
-				log.debug("Checking for count type " + node.getTextContent());
 				Assert.assertNotNull(node.getTextContent(), mappedType);
 				final Node ref = gen.evaluateXPath("//rng:ref[@name='" + mappedType + "']");
 				Assert.assertNotNull("Should have found the ref node", ref);
@@ -40,11 +40,12 @@ public class TestRNGReading extends TesterBase {
 		});
 	}
 
+	@Test
 	public void testCodeGeneration() throws Exception {
 
 		final InputStream is = super.getRNGFileResource();
 		gen.generate(is, this.memoryWriter);
-
+		compileInMemory(memoryWriter);
 	}
 
 	@Test

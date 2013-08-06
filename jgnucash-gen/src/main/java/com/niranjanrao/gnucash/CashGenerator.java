@@ -9,12 +9,18 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.gnu.gnucash.CashBase;
+import org.gnu.gnucash.INodeWorker;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.sun.codemodel.CodeWriter;
+import com.sun.codemodel.JClass;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
+import com.sun.codemodel.JExpr;
+import com.sun.codemodel.JFieldVar;
+import com.sun.codemodel.JMethod;
+import com.sun.codemodel.JMod;
 import com.sun.codemodel.JPackage;
 
 public class CashGenerator extends CashBase {
@@ -97,36 +103,73 @@ public class CashGenerator extends CashBase {
 
 		for (final Entry<String, Node> entry : defineElementMap.entrySet()) {
 			final String classPath = getClassPath(entry);
-			final JDefinedClass cls = model._getClass(classPath);
-			if (null == cls) {
-				log.info("Going to create class " + classPath);
-			}
+			generateClass(classPath, entry.getValue());
 		}
 	}
 
 	private String getClassPath(final Entry<String, Node> entry) throws Exception {
-		final Node elm = evaluateXPath("./rng:element/@name", entry.getValue());
+		return getClassPath(entry.getKey(), entry.getValue());
+	}
+
+	private JDefinedClass generateClass(final String classPath, final Node classData) throws Exception {
+		JDefinedClass cls = model._getClass(classPath);
+		if (cls != null) {
+			return cls;
+		}
+		log.info("Going to create class " + classPath);
+		cls = model._class(classPath);
+		cls._extends(CashBase.class);
+		generateCounters(cls, classData);
+		return cls;
+	}
+
+	private void generateCounters(final JDefinedClass cls, final Node classData) throws Exception {
+		final NodeList counterList = evaluateXPathList(".//rng:element[@name='gnc:count-data']", classData);
+		forEachNodeDo(counterList, new INodeWorker() {
+
+			@Override
+			public void doWork(final int index, final Node node, final Object... data) throws Exception {
+				generateCounter(node, (JDefinedClass) data[0]);
+			}
+
+		}, cls);
+	}
+
+	private void generateCounter(final Node counterNode, final JDefinedClass cls) throws Exception {
+		final Node constNode = evaluateXPath("./rng:value", counterNode);
+		final Node typeNode = evaluateXPath("./rng:attribute[@name='cd:type']/rng:value", counterNode);
+		final String objName = typeNode.getTextContent();
+		final String typeName = getCountDataMappingName(objName);
+
+		final String methodName = "get" + typeName + "Count";
+
+		final JMethod method = cls.method(JMod.PUBLIC, model.INT, methodName);
+		if (null != constNode) {
+			method.body()._return(JExpr.lit(Integer.valueOf(constNode.getTextContent())));
+		} else {
+			final Node obj = evaluateXPath("//rng:ref[@name='" + typeName + "']");
+			final String fullPath = getClassPath(typeName, obj);
+			final JDefinedClass type = generateClass(fullPath, obj);
+			final JClass list = model.ref(java.util.List.class).narrow(type);
+			final JFieldVar field = cls.field(JMod.PRIVATE, list, "_" + typeName.toLowerCase() + "s");
+			method.body()._return(field.invoke("size"));
+		}
+	}
+
+	private String getClassPath(final String key, final Node value) throws Exception {
+		final Node elm = evaluateXPath("./rng:element/@name", value);
 		String pkg = "";
 		if (elm == null) {
-			log.debug("Could not find element element for define " + entry.getKey());
+			log.debug("Could not find element element for define " + key);
 
 		} else {
 			pkg = elm.getTextContent();
 		}
-		return getFullyQualifiedName(entry.getKey(), pkg);
+		return getFullyQualifiedName(key, pkg);
 	}
 
 	public boolean hasDefinedElement(final String string) {
 		return defineElementMap.containsKey(string);
-	}
-
-	public void forEachNodeDo(final NodeList list, final INodeWorker iNodeWorker, final Object... data) throws Exception {
-		Node node;
-		for (int i = 0, iMax = list.getLength(); i < iMax; i++) {
-			node = list.item(i);
-			iNodeWorker.doWork(i, node, data);
-		}
-
 	}
 
 	static final String PACAKGE_PATH = "org.gnu.gnucash.";
