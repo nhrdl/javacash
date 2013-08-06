@@ -53,20 +53,10 @@ public class TesterBase {
 
 			final JavaSourceFromString js = (JavaSourceFromString) diagnostic.getSource();
 			log.error(String.format("%s:%d:%s", js.toUri(), diagnostic.getLineNumber(), diagnostic.getMessage(Locale.US)));
-			// System.out.println(js.toUri());
-			// System.out.println(diagnostic.getLineNumber());
-			// System.out.println(diagnostic.getMessage(Locale.US));
-			// System.out.println(diagnostic.getCode());
-			// System.out.println(diagnostic.getKind());
-			// System.out.println(diagnostic.getPosition());
-			// System.out.println(diagnostic.getStartPosition());
-			// System.out.println(diagnostic.getEndPosition());
-
-			// System.out.println(diagnostic.getMessage(null));
-			//
-
 		}
-		writer.dump();
+		if (!success) {
+			writer.dump();
+		}
 
 		Assert.assertTrue("Compilation failed", success);
 		return new MemoryClassLoader(fileMan.getMap());

@@ -24,6 +24,19 @@ public class TestRNGReading extends TesterBase {
 	}
 
 	@Test
+	public void testRefElements() throws Exception {
+		final NodeList list = gen.evaluateXPathList("//rng:*[rng:ref]");
+		gen.forEachNodeDo(list, new INodeWorker() {
+
+			@Override
+			public void doWork(final int index, final Node node, final Object... data) throws Exception {
+				log.info(node.getNodeName());
+
+			}
+		});
+	}
+
+	@Test
 	public void testCountData() throws Exception {
 
 		final NodeList list = gen.evaluateXPathList("//rng:element[@name='gnc:count-data']/rng:attribute[@name='cd:type']/rng:value");

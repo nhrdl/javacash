@@ -58,6 +58,14 @@ public class CashBase {
 		}
 	}
 
+	public void forEachNodeDo(final String xpath, final Node context, final INodeWorker iNodeWorker, final Object... data) throws Exception {
+		forEachNodeDo(evaluateXPathList(xpath, context), iNodeWorker, data);
+	}
+
+	public void forEachNodeDo(final String xpath, final INodeWorker iNodeWorker, final Object... data) throws Exception {
+		forEachNodeDo(evaluateXPathList(xpath), iNodeWorker, data);
+	}
+
 	public void forEachNodeDo(final NodeList list, final INodeWorker iNodeWorker, final Object... data) throws Exception {
 		Node node;
 		for (int i = 0, iMax = list.getLength(); i < iMax; i++) {

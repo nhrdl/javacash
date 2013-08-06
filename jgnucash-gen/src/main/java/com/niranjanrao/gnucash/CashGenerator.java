@@ -136,8 +136,7 @@ public class CashGenerator extends CashBase {
 	}
 
 	private void generateCounters(final JDefinedClass cls, final Node classData) throws Exception {
-		final NodeList counterList = evaluateXPathList(".//rng:element[@name='gnc:count-data']", classData);
-		forEachNodeDo(counterList, new INodeWorker() {
+		forEachNodeDo(".//rng:element[@name='gnc:count-data']", classData, new INodeWorker() {
 
 			@Override
 			public void doWork(final int index, final Node node, final Object... data) throws Exception {
