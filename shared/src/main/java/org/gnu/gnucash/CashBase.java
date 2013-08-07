@@ -11,20 +11,43 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class CashBase {
 
-	private Document document;
+	private Node rootNode;
 
 	final XPathFactory xpathFactory = XPathFactory.newInstance();
-	final NamespaceContext nameSpaceContext = new NamespaceContextMap("rng", "http://relaxng.org/ns/structure/1.0");
+	final NamespaceContext nameSpaceContext = new NamespaceContextMap("rng", "http://relaxng.org/ns/structure/1.0", "gnc", "http://www.gnucash.org/XML/gnc",
+			"act", "http://www.gnucash.org/XML/act", "book", "http://www.gnucash.org/XML/book", "cd", "http://www.gnucash.org/XML/cd", "cmdty",
+			"http://www.gnucash.org/XML/cmdty", "price", "http://www.gnucash.org/XML/price", "slot", "http://www.gnucash.org/XML/slot", "split",
+			"http://www.gnucash.org/XML/split", "sx", "http://www.gnucash.org/XML/sx", "trn", "http://www.gnucash.org/XML/trn", "ts",
+			"http://www.gnucash.org/XML/ts", "fs", "http://www.gnucash.org/XML/fs", "bgt", "http://www.gnucash.org/XML/bgt", "recurrence",
+			"http://www.gnucash.org/XML/recurrence", "lot", "http://www.gnucash.org/XML/lot", "addr", "http://www.gnucash.org/XML/addr", "owner",
+			"http://www.gnucash.org/XML/owner", "billterm", "http://www.gnucash.org/XML/billterm", "bt-days", "http://www.gnucash.org/XML/bt-days", "bt-prox",
+			"http://www.gnucash.org/XML/bt-prox", "cust", "http://www.gnucash.org/XML/cust", "employee", "http://www.gnucash.org/XML/employee", "entry",
+			"http://www.gnucash.org/XML/entry", "invoice", "http://www.gnucash.org/XML/invoice", "job", "http://www.gnucash.org/XML/job", "order",
+			"http://www.gnucash.org/XML/order", "taxtable", "http://www.gnucash.org/XML/taxtable", "tte", "http://www.gnucash.org/XML/tte", "vendor",
+			"http://www.gnucash.org/XML/vendor");
 
-	public Document getDocument() {
-		return document;
+	public CashBase() {
+
+	}
+
+	public CashBase(final Node root) {
+		rootNode = root;
+	}
+
+	public Node getDocument() {
+		return rootNode;
+	}
+
+	public String evaluateXPathString(final String query) throws Exception {
+		final XPath xpath = xpathFactory.newXPath();
+		xpath.setNamespaceContext(nameSpaceContext);
+		return (String) xpath.evaluate(query, rootNode, XPathConstants.STRING);
 	}
 
 	public String evaluateXPathString(final String query, final Node context) throws Exception {
@@ -34,7 +57,7 @@ public class CashBase {
 	}
 
 	public NodeList evaluateXPathList(final String query) throws Exception {
-		return evaluateXPathList(query, document);
+		return evaluateXPathList(query, rootNode);
 	}
 
 	public NodeList evaluateXPathList(final String query, final Node context) throws Exception {
@@ -44,7 +67,7 @@ public class CashBase {
 	}
 
 	public Node evaluateXPath(final String query) throws Exception {
-		return evaluateXPath(query, document);
+		return evaluateXPath(query, rootNode);
 	}
 
 	public Node evaluateXPath(final String query, final Node context) throws Exception {
@@ -58,7 +81,7 @@ public class CashBase {
 			final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 			docFactory.setNamespaceAware(true); // never forget this!
 			final DocumentBuilder builder = docFactory.newDocumentBuilder();
-			this.document = builder.parse(in);
+			this.rootNode = builder.parse(in);
 		} finally {
 			in.close();
 		}
