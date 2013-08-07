@@ -9,4 +9,5 @@ public class GenData {
 
 	public JDefinedClass _class;
 	public ArrayList<JStatement> constructorList = new ArrayList<>();
+	public String classPath;
 }

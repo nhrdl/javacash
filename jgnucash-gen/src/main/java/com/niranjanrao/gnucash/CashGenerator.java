@@ -128,11 +128,73 @@ public class CashGenerator extends CashBase {
 		}
 		log.info("Going to create class " + classPath);
 		final GenData data = new GenData();
+		data._class = cls;
+		data.classPath = classPath;
 		this.generationData.put(classPath, data);
 		cls = model._class(classPath);
 		cls._extends(CashBase.class);
 		generateCounters(cls, classData);
+		generateMembers(cls, classData);
 		return cls;
+	}
+
+	private enum RefParent {
+		group, element, oneOrMore, zeroOrMore, optional, define
+	};
+
+	private void generateMembers(final JDefinedClass cls, final Node classData) throws Exception {
+		forEachNodeDo(".//rng:ref", classData, new INodeWorker() {
+
+			@Override
+			public void doWork(final int index, final Node node, final Object... data) throws Exception {
+				generateMembers(node, (JDefinedClass) data[0]);
+
+			}
+
+			private void generateMembers(final Node node, final JDefinedClass jDefinedClass) throws Exception {
+				final String parentName = node.getParentNode().getNodeName();
+				log.info(evaluateXPathString("./@name", node) + ":" + parentName);
+				log.info("Parent:" + parentName);
+				final RefParent parent = RefParent.valueOf(parentName);
+				switch (parent) {
+				case element:
+					log.info("Todo:");
+					break;
+				case group:
+					generateSingleMemember(node, jDefinedClass);
+					break;
+				case oneOrMore:
+					log.info("Todo:");
+					break;
+				case zeroOrMore:
+					log.info("Todo:");
+					break;
+				case optional:
+					log.info("Todo:");
+					break;
+				case define:
+					log.info("Todo:");
+					break;
+				default:
+					throw new Exception("Don't know how to handle ref here:" + parent);
+				}
+			}
+
+			private void generateSingleMemember(final Node node, final JDefinedClass jDefinedClass) throws Exception {
+				GenData cData = null;
+				final String typeName = evaluateXPathString("./@name", node);
+				final String endsWith = "." + typeName;
+				for (final GenData data : generationData.values()) {
+					if (data.classPath.endsWith(endsWith)) {
+						cData = data;
+						break;
+					}
+				}
+				if (null == cData) {
+					throw new Exception("No mapping found for " + typeName);
+				}
+			}
+		}, cls);
 	}
 
 	private void generateCounters(final JDefinedClass cls, final Node classData) throws Exception {
@@ -153,14 +215,15 @@ public class CashGenerator extends CashBase {
 		final String typeName = getCountDataMappingName(objName);
 
 		final String methodName = "get" + typeName + "Count";
+		final Node obj = evaluateXPath("//rng:ref[@name='" + typeName + "']");
+		final String fullPath = getClassPath(typeName, obj);
+		final JDefinedClass type = generateClass(fullPath, obj);
 
 		final JMethod method = cls.method(JMod.PUBLIC, model.INT, methodName);
 		if (null != constNode) {
 			method.body()._return(JExpr.lit(Integer.valueOf(constNode.getTextContent())));
+
 		} else {
-			final Node obj = evaluateXPath("//rng:ref[@name='" + typeName + "']");
-			final String fullPath = getClassPath(typeName, obj);
-			final JDefinedClass type = generateClass(fullPath, obj);
 			final JClass list = model.ref(ArrayList.class).narrow(type);
 			final JFieldVar field = cls.field(JMod.PRIVATE, list, "_" + typeName.toLowerCase() + "s");
 			method.body()._return(field.invoke("size"));

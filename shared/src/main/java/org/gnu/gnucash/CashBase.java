@@ -27,6 +27,12 @@ public class CashBase {
 		return document;
 	}
 
+	public String evaluateXPathString(final String query, final Node context) throws Exception {
+		final XPath xpath = xpathFactory.newXPath();
+		xpath.setNamespaceContext(nameSpaceContext);
+		return (String) xpath.evaluate(query, context, XPathConstants.STRING);
+	}
+
 	public NodeList evaluateXPathList(final String query) throws Exception {
 		return evaluateXPathList(query, document);
 	}

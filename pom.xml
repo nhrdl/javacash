@@ -14,6 +14,7 @@
 		<!-- core modules -->
 		<module>jgnucash-gen</module>
 		<module>shared</module>
+		<module>directRead</module>
 	</modules>
 	<dependencies>
 		<dependency>
