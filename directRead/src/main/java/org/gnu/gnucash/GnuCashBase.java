@@ -1,7 +1,5 @@
-package com.niranjanrao.gnucash;
+package org.gnu.gnucash;
 
-import org.gnu.gnucash.CashBase;
-import org.gnu.gnucash.ReadData;
 import org.w3c.dom.Node;
 
 public class GnuCashBase extends CashBase {
@@ -15,5 +13,9 @@ public class GnuCashBase extends CashBase {
 
 	public void read(final ReadData data) throws Exception {
 
+	}
+
+	public boolean isValid() {
+		return true;
 	}
 }

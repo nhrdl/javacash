@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Node;
 
-import com.niranjanrao.gnucash.GnuCashBase;
-
-public class Book extends GnuCashBase {
+public class Book extends VersionBase {
 
 	private final ArrayList<Commodity> commodities;
 
@@ -20,10 +18,7 @@ public class Book extends GnuCashBase {
 
 	@Override
 	public void read(final ReadData data) throws Exception {
-		final String version = evaluateXPathString("./@version");
-		if ("2.0.0".equals(version) == false) {
-			throw new Exception("Version mismatch. Found version " + version);
-		}
+		super.read(data);
 
 		readCommodities(data);
 	}
