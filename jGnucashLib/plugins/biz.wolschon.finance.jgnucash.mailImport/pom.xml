@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>biz.wolschon</groupId>
+    <artifactId>gnucash</artifactId>
+    <version>2.0.26</version>
+  </parent>
+  <groupId>biz.wolschon.finance.jgnucash</groupId>
+  <artifactId>mailImport</artifactId>
+  <version>2.0.26</version>
+  <packaging>jar</packaging>
+
+  <name>mailImport</name>
+  <dependencies>
+    <dependency>
+      <groupId>biz.wolschon.finance.jgnucash.editor</groupId>
+      <artifactId>main</artifactId>
+      <version>2.0.26</version>
+    </dependency>
+    <dependency>
+      <groupId>biz.wolschon.finance.jgnucash</groupId>
+      <artifactId>AbstractScriptablePlugin</artifactId>
+      <version>2.0.26</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.jpf</groupId>
+      <artifactId>jpf-boot</artifactId>
+      <version>1.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>biz.wolschon.finance.jgnucash.viewer</groupId>
+      <artifactId>main</artifactId>
+      <version>2.0.26</version>
+    </dependency>
+    <dependency>
+      <groupId>biz.wolschon.finance.jgnucash</groupId>
+      <artifactId>AbstractScriptableImporter</artifactId>
+      <version>2.0.26</version>
+    </dependency>
+        <dependency>
+	<groupId>javax.mail</groupId>
+	<artifactId>mail</artifactId>
+	<version>1.4</version>
+</dependency>
+
+  </dependencies>
+</project>

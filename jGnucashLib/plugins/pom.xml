@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>biz.wolschon</groupId>
+  <artifactId>gnucash</artifactId>
+  <version>2.0.26</version>
+  <packaging>pom</packaging>
+
+  <name>jGnucashLib plugins </name>
+
+  <modules>
+    <module>biz.wolschon.finance.jgnucash.AbstractScriptableImporter</module>
+    <module>biz.wolschon.finance.jgnucash.editor.main</module>
+    <module>biz.wolschon.finance.jgnucash.pago</module>
+    <module>biz.wolschon.finance.jgnucash.viewer.main</module>
+    <module>biz.wolschon.finance.jgnucash.AbstractScriptablePlugin</module>
+    <module>biz.wolschon.finance.jgnucash.HBCIImporter</module>
+<!--    <module>biz.wolschon.finance.jgnucash.PaypalImporter</module>
+    <module>biz.wolschon.finance.jgnucash.wirecard</module>
+    <module>biz.wolschon.finance.jgnucash.accountProperties</module>
+    <module>biz.wolschon.finance.jgnucash.HBCIImporterNew</module>
+    <module>biz.wolschon.finance.jgnucash.simplesearch</module>
+    <module>biz.wolschon.finance.jgnucash.AdvanziaEmailImporter</module>
+    <module>biz.wolschon.finance.jgnucash.mailImport</module>
+    <module>biz.wolschon.finance.jgnucash.splitter</module>
+    <module>biz.wolschon.finance.jgnucash.ComdirectCSVImporter</module>
+    
+    <module>biz.wolschon.finance.jgnucash.mysql</module>
+    -->
+  </modules>
+</project>
