@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified" targetNamespace="http://www.gnucash.org/XML/gnc" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:cd="http://www.gnucash.org/XML/cd" xmlns:gnc="http://www.gnucash.org/XML/gnc" jaxb:version="2.1">
+
+	<xs:import schemaLocation="cd.xsd" namespace="http://www.gnucash.org/XML/cd"></xs:import>
+
+	<xs:attribute name="type" type="xs:string"></xs:attribute>
+
+	<xs:complexType name="book-count-data">
+		<xs:simpleContent>
+			<xs:extension base="xs:int">
+				<xs:attribute ref="cd:type" fixed="book"></xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<xs:complexType name="count-data">
+		<xs:simpleContent>
+			<xs:extension base="xs:int">
+				<xs:attribute ref="cd:type"></xs:attribute>
+			</xs:extension>
+
+		</xs:simpleContent>
+	</xs:complexType>
+
+</xs:schema>

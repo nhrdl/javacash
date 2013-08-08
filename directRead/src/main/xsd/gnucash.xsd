@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:cd="http://www.gnucash.org/XML/cd" xmlns:gnc="http://www.gnucash.org/XML/gnc"
+	jaxb:version="2.1">
+
+	<xs:import schemaLocation="gnc.xsd" namespace="http://www.gnucash.org/XML/gnc"></xs:import>
+
+
+	<xs:element name="gnc-v2">
+		<xs:annotation>
+			<xs:appinfo>
+				<jaxb:class name="GnuCashV2" />
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+			<xs:choice>
+				<xs:element name="count-data" type="gnc:book-count-data">
+					<xs:annotation>
+						<xs:appinfo>
+							<jaxb:property name="bookCount" />
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+			</xs:sequence>
+			
+		</xs:complexType>
+
+	</xs:element>
+
+
+</xs:schema>

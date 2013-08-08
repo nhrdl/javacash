@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<gnc-v2 xmlns:gnc="http://www.gnucash.org/XML/gnc" xmlns:cd="http://www.gnucash.org/XML/cd" >
+	<gnc:count-data cd:type="book">1</gnc:count-data>
+</gnc-v2>
