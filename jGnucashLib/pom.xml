@@ -11,6 +11,6 @@
   <name>jGnucashLib Alternative Gnucash implementation Brought to you by marcuswolschon </name>
 
   <modules>
-    <module>plugin</module>
+    <module>plugins</module>
   </modules>
 </project>
