@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import biz.wolschon.fileformats.gnucash.GnucashAccount;
 import biz.wolschon.fileformats.gnucash.GnucashWritableAccount;
 import biz.wolschon.fileformats.gnucash.GnucashWritableTransaction;
 import biz.wolschon.fileformats.gnucash.GnucashWritableTransactionSplit;
@@ -47,5 +48,12 @@ public class TestFileOperations {
 			f.delete();
 		}
 		writer.writeFile(f);
+	}
+
+	@Test
+	public void testRootAccount() {
+		for (final GnucashAccount acct : writer.getRootAccounts()) {
+			System.out.println("Account " + acct.getName());
+		}
 	}
 }
